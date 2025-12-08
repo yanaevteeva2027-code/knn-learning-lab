@@ -45,8 +45,8 @@ export function HelpDialog() {
               Guided learning scenarios with pre-configured settings:
             </p>
             <ul className="list-disc list-inside space-y-1 text-muted-foreground">
-              <li><strong>Load</strong> - Apply the example's settings to the playground</li>
-              <li><strong>Reset</strong> - Return to the example's original settings</li>
+              <li><strong>Load Example</strong> - Apply the example's settings to the playground</li>
+              <li><strong>Reset to Example</strong> - Return to the example's original settings after experimenting</li>
               <li>Read the "What to Observe" panel for insights</li>
               <li>Modify settings to explore variations</li>
             </ul>

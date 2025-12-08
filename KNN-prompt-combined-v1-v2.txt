@@ -1,0 +1,253 @@
+Explainable KNN – Version 2 Requirements (for Lovable / Cursor implementation)
+
+1. Goal and context
+   1.1 Build a single-page, browser-based interactive K-Nearest Neighbours (KNN) playground that lets users:
+   – Generate and visualise synthetic 2D datasets (Moons, Circles, Blobs).
+   – Adjust KNN parameters (k, weighting, distance metric, noise, sample size, seed).
+   – Inspect neighbours and observe decision boundaries, accuracy and confusion matrix.
+   – Learn KNN concepts via Guided Examples.
+   – Self-test understanding via a multiple-choice KNN Quiz.
+   – Read clear Help and About information, including project credentials.  
+
+1.2 Project identity (must appear in the About screen and metadata):
+– Author: Yana Evteeva
+– Project name: Explainable KNN
+– Program: MIT Beaver Works Applied Engineering & AI (BWSI 2025) 
+
+1.3 The current placeholder page “Welcome to Your Blank App” must be completely removed. The root route (/) must render the Explainable KNN interface described below.
+
+2. High-level UI structure
+   2.1 Single-page app layout:
+   – Top area: project title area (e.g. “Explainable KNN – Interactive Playground”) and main navigation.
+   – Main navigation tabs:
+   • “Playground” – core interactive KNN visualisation (all v1 functionality).
+   • “Examples” – Guided Examples mode (v2).
+   • “Quiz” – KNN Quiz mode (v2).
+   – Global buttons:
+   • “Help” – opens Help screen/modal with usage instructions.
+   • “About” – opens About screen/modal with project description and credentials.
+
+2.2 View switching:
+– Clicking each tab changes the main content pane but keeps the same KNN visualisation component and controls where appropriate (the canvas and controls are shared across modes to avoid duplicate logic).
+– Help and About appear as overlays or full-screen panels on top of the current tab and can be closed to return to the same state.
+
+3. Core KNN Playground (v1) functionality – must still exist in v2
+   3.1 Datasets:
+   – Three synthetic 2D datasets:
+   • “Moons” – two interlocking half-circles (nonlinear).
+   • “Circles” – two concentric circles (nonlinear).
+   • “Blobs” – two Gaussian blobs, approximately linearly separable. 
+   – Dataset selector control with these three options.
+
+3.2 Controls (side panel or bottom panel; same in all modes where applicable):
+– k (Number of neighbours):
+• Slider or numeric input, integer range 1–40.
+• Changing k updates the decision boundary and metrics live.
+– Weights:
+• Options: “Uniform” (all neighbours equal) and “Distance” (closer neighbours vote more).
+• “Distance” should implement a standard inverse-distance or similar weighting function. 
+– Distance metric (p):
+• p = 2 → Euclidean (L2).
+• p = 1 → Manhattan (L1).
+• Changing metric updates neighbourhood shapes (round vs diamond) and decision boundary. 
+– Dataset selector:
+• Options: Moons, Circles, Blobs (see 3.1).
+– Noise:
+• Slider or numeric control (0–0.5 or similar) controlling class overlap.
+• Higher noise should make the boundary more ambiguous and reduce accuracy.
+– Sample size:
+• Control for number of points (e.g. 50–1000).
+• Used when generating the dataset.
+– Random seed:
+• Numeric input used for reproducible dataset generation.
+– Inspect Point:
+• Numeric input for point index (e.g. “Inspect index”), plus support for clicking a point on the canvas to set the inspected index. 
+
+3.3 Visualisation canvas:
+– Renders a 2D plane with:
+• Decision boundary heatmap showing predicted class at each grid cell (e.g. blue vs magenta regions).
+• Training points plotted on top (different colour/marker per class).
+• One “inspected” point highlighted distinctly.
+• Lines from the inspected point to its k nearest neighbours (dashed or thin lines) to show who is voting. 
+– Canvas updates live when any control (k, weights, metric, dataset, noise, sample size, seed, inspect index) changes.
+– Implementation requirement:
+• Use the existing pure-JS brute-force KNN implementation (no external ML libraries).
+• Compute neighbours directly in the browser for the current dataset.
+
+3.4 Metrics panel:
+– Shows “Test Accuracy” as percentage.
+– Shows a confusion matrix summary: counts of TP, TN, FP, FN.
+– Values update when data or parameters change.
+– Accuracy formula: Accuracy = (TP + TN) / (TP + TN + FP + FN). 
+
+3.5 Performance constraints:
+– Must remain responsive for sample sizes up to around 1000 points.
+– If necessary, adjust decision-boundary grid resolution to maintain smooth interaction. 
+
+3.6 Visual style (minimum):
+– Dark or high-contrast theme, clear point colours (two class colours) and readable controls.
+– Consistent layout across modes: canvas on one side, controls and metrics on the other (similar to the UI mockup description). 
+
+4. Guided Examples mode (v2 feature 1)
+   4.1 Data source:
+   – Load guided examples from a static JSON file (examples.json) included in the project. 
+   – Each example object has this structure:
+   • id: string
+   • title: string (e.g. “Overfitting vs Smoothing with k”)
+   • goal: short description of what the learner should understand from this example.
+   • settings: object containing a preset configuration:
+   – dataset: "moons" | "circles" | "blobs"
+   – k: number
+   – weights: "uniform" | "distance"
+   – p: 1 | 2
+   – noise: number
+   – sampleSize: number
+   – seed: number
+   – inspectIndex: optional number
+   • observe: string array of bullet points describing what to notice (e.g. “With a small k the boundary is jagged…”).
+   • actions: array of objects such as { "hint": "Slide the k control from 3 up to 20 ..." }. 
+
+4.2 UI layout for “Examples” tab:
+– Display a scrollable list of example cards (one card per example from JSON).
+– Each card shows:
+• Example title.
+• Brief goal text.
+• A short “What to observe” bullet list (from observe).
+• Action hints (optional small text).
+– Each card includes at least two buttons:
+• “Load Example” – apply this example’s settings to the global controls and canvas.
+• “Test Example” or “Reset to Example” – re-apply the original settings for this example after the user has changed controls.
+
+4.3 Behaviour:
+– When the user clicks “Load Example”:
+• The global controls (dataset, k, weights, metric p, noise, sample size, seed, inspect index) are set from example.settings.
+• The main canvas and metrics update immediately.
+• The user can then tweak any control as normal.
+– When the user clicks the “Test Example” / “Reset” button:
+• Controls are reset back to example.settings.
+• This allows students to “return to baseline” after experimenting.
+– The Examples mode reuses the same canvas and metrics panel as the Playground mode; only the right-side content (cards and notes) is specific to the Examples tab.
+
+4.4 Learning intent:
+– Examples should clearly demonstrate core KNN ideas such as:
+• Overfitting vs smoothing when changing k.
+• Effect of distance weighting when classes overlap.
+• Difference between Manhattan (p=1) and Euclidean (p=2) metrics.
+• Linear vs nonlinear dataset behaviour.
+• Robustness to noise.
+• Visualising which neighbours vote (inspectIndex).  
+
+5. KNN Quiz mode (v2 feature 2)
+   5.1 Data source:
+   – Load quiz questions from a static JSON file (quiz.json) included in the project. 
+   – Question structure:
+   • id: string
+   • stem: string (question text describing a scenario).
+   • options: array of option objects:
+   – id: e.g. "A", "B", "C", "D".
+   – label: human-readable description (including dataset, k, weights, p, noise, etc.).
+   – settings: object with dataset, k, weights, p, noise, sampleSize, seed, and optional inspectIndex, same schema as in examples.
+   • correctOptionId: string referencing options[i].id.
+   • explanation: string with feedback explanation. 
+
+5.2 UI layout for “Quiz” tab:
+– The user sees one question at a time, with:
+• Question stem at the top.
+• Four radio-button options (A–D), each showing label text.
+• Optional “Preview” link or button for each option.
+• “Submit Answer” button.
+– Below the options, an area for feedback (correct/incorrect and explanation).
+– At top or bottom of the quiz, show current question index and total (e.g. “Question 3 of 10”) and current score.
+
+5.3 Preview behaviour (KNN visualisation integration):
+– Each option’s settings include dataset, k, weights, p, noise, sampleSize, seed, inspectIndex.
+– When the user clicks “Preview” for an option:
+• The global KNN controls and canvas temporarily switch to that option’s settings.
+• The user sees the decision boundary and points corresponding to that configuration.
+• Preview does not automatically mark an answer as chosen; the student still has to select the radio button.
+– After the user selects a final option and submits, the canvas can stay on the chosen option’s configuration or revert to the previous state (implementation choice is allowed; behaviour must be consistent across all questions). 
+
+5.4 Answer submission and scoring:
+– When the user clicks “Submit Answer”:
+• If no option is selected, show a gentle prompt to choose an answer.
+• If selected, check against correctOptionId.
+• Show immediate feedback:
+– “Correct” or “Incorrect”.
+– Display the explanation text from the question data.
+• Update quiz score (e.g. count of correct answers).
+– After answering, provide navigation:
+• “Next question” button until the end.
+• After the last question, show:
+– Final score (e.g. “You scored 7 / 10”).
+– Option to “Retake Quiz” (reset quiz state and score).
+
+5.5 Quiz behaviour details:
+– Number of questions is based on quiz.json length (currently around 10 questions).
+– Quiz logic should be purely client-side; no backend.
+– Retake resets answers and score but reuses the same question set.
+
+6. Help and About screens (updated for v2)
+   6.1 Help screen:
+   – Accessible via a persistent “Help” button in the main UI.
+   – Content:
+   • Short description of the tool and what KNN is.
+   • Explanation of core controls (k, weights, distance metric p, dataset, noise, sample size, seed, inspect point).
+   • Explanation of what the decision-boundary heatmap and confusion matrix mean.
+   • How to use “Inspect Point” to see neighbours and voting.
+   • Short instructions for each mode:
+   – Playground: free exploration.
+   – Examples: pick a preset, click “Load Example”, then experiment; click “Test/Reset” to go back.
+   – Quiz: read scenario, preview options, answer questions, read explanations and track score.  
+   – The Help content can be static text stored in a component; exact phrasing can reuse or paraphrase the existing Readme text.
+
+6.2 About screen:
+– Accessible via a persistent “About” button.
+– Content must include:
+• Project name: Explainable KNN.
+• Author: Yana Evteeva.
+• Program: MIT Beaver Works Applied Engineering & AI (BWSI 2025).
+• Short description of the project’s purpose (learning and teaching KNN, BWSI context).
+• One or two sentences crediting that this is a web-based interactive playground for exploring KNN decision boundaries and parameters. 
+
+7. Static assets and branding (optional but recommended)
+   7.1 Use or reserve space for:
+   – Hero banner style header image or canvas area inspired by:
+   • Large decision-boundary heatmap, two coloured regions (blue vs magenta).
+   • Scattered points, one highlighted point with neighbour lines.
+   • Dark gradient background with subtle grid and code motifs. 
+   – Thumbnail / icon for favicon and social previews:
+   • A small icon representing Voronoi-style cells and neighbours. 
+   – These can be static image files generated separately; the app should reference them where appropriate (e.g., favicon, Open Graph meta tags, and maybe a hero area on the landing view).
+
+8. Technical and implementation notes
+   8.1 Platform and architecture:
+   – Use the existing Lovable-generated React + Vite codebase (TypeScript if already set up).
+   – All KNN logic is client-side, implemented as a small pure-JS/TS KNN module (brute-force neighbour search).
+   – No external ML or backend services.
+
+8.2 Data handling:
+– Import examples.json and quiz.json as static assets or ES module data, depending on the build configuration.
+– Define TypeScript interfaces (if used) matching the schemas described in sections 4.1 and 5.1.
+– Ensure robust handling of missing or malformed data (e.g. fail gracefully if a field is missing, but this is not expected).
+
+8.3 State management:
+– Maintain a single source of truth for KNN configuration (dataset, k, weights, p, noise, sampleSize, seed, inspectIndex).
+– The Playground, Examples, and Quiz tabs should all read and update this shared configuration so the canvas and metrics are consistent.
+– Examples and Quiz should not duplicate the KNN logic; they should only set configuration values.
+
+8.4 UX and error handling:
+– Ensure that on initial load, the app:
+• Immediately generates a default dataset (e.g. Moons, k=5, Uniform, p=2, moderate noise).
+• Renders canvas, controls, and metrics without requiring user input.
+– Any invalid inspect index should show a clear message and avoid crashing (e.g. ignore index or clamp to valid range).
+– Sliders and inputs should have sensible defaults and ranges.
+
+8.5 Testing / sanity checks:
+– Verify that:
+• Changing k from small (1–3) to larger (15–20) clearly changes boundary smoothness (visually and in examples).
+• Distance weighting vs uniform weighting changes predictions near overlapping regions when noise is high.
+• Manhattan vs Euclidean metrics produce visible shape changes on Circles.  
+• Guided Examples correctly apply their settings and can be reset with the Test/Reset button.
+• Quiz questions load correctly from quiz.json, preview works, answers are evaluated, explanations display, and final score is computed and reset properly.
+
+This document describes the complete functional scope for Explainable KNN Version 2, including all Version 1 playground features plus the new Guided Examples, Quiz mode, and updated Help and About screens. Cursor AI should implement or fix the existing Lovable project so that the root page renders this application instead of the blank starter page and all behaviours above work correctly.

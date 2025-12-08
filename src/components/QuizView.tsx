@@ -75,7 +75,7 @@ export function QuizView() {
           <p className="text-muted-foreground mb-6">{percentage}% correct</p>
           <Button onClick={handleRetry} className="gap-2">
             <RotateCcw className="h-4 w-4" />
-            Retry Quiz
+            Retake Quiz
           </Button>
         </Card>
       </div>

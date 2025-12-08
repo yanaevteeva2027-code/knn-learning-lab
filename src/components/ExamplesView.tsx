@@ -67,21 +67,22 @@ export function ExamplesView() {
             <p className="text-muted-foreground mb-3">{currentExample.goal}</p>
             <div className="flex gap-2">
               <Button
+                variant="default"
+                size="sm"
+                onClick={handleLoadExample}
+                className="gap-2"
+              >
+                <Eye className="h-4 w-4" />
+                Load Example
+              </Button>
+              <Button
                 variant="outline"
                 size="sm"
                 onClick={handleLoadExample}
                 className="gap-2"
               >
                 <RotateCcw className="h-4 w-4" />
-                Reset
-              </Button>
-              <Button
-                variant="default"
-                size="sm"
-                className="gap-2"
-              >
-                <Eye className="h-4 w-4" />
-                Loaded
+                Reset to Example
               </Button>
             </div>
           </div>

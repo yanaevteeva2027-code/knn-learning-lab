@@ -28,7 +28,7 @@ export function AboutDialog() {
 
           <section>
             <h3 className="font-semibold text-primary mb-1">Project</h3>
-            <p className="text-muted-foreground">Explainable KNN Playground v2</p>
+            <p className="text-muted-foreground">Explainable KNN</p>
           </section>
 
           <section>
@@ -39,7 +39,7 @@ export function AboutDialog() {
           <section>
             <h3 className="font-semibold text-primary mb-1">Program</h3>
             <p className="text-muted-foreground">
-              MIT Beaver Works Summer Institute (BWSI) 2025
+              MIT Beaver Works Applied Engineering & AI (BWSI) 2025
             </p>
           </section>
 
