@@ -1,0 +1,13 @@
+# Big / generated folders – do not send to AI
+node_modules/
+dist/
+dist-ssr/
+coverage/
+.build/
+.cache/
+
+# VCS + editor junk
+.git/
+.DS_Store
+*.log
+*.tmp
